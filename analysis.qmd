@@ -2,5 +2,34 @@
 title: "Trains"
 author: "Oluchi Nnadi"
 format: html
+execute:
+  echo: false
 ---
 
+```{r}
+#| message: false
+library(tidyverse)
+library(primer.data)
+```
+
+```{r}
+ggplot(trains, aes(x = treatment, y = att_end)) +
+  geom_jitter(width = 0.2, height = 0.2, alpha = 0.5) +
+  stat_summary(fun = "mean", geom = "point", color = "red", size = 4) +
+  labs(
+    title = "Attitude Toward Immigration After Intervention",
+    subtitle = "Comparing participants who saw Spanish-speakers (Treated) vs. those who did not (Control)",
+    x = "Treatment Group",
+    y = "Attitude Toward Immigration (att_end)",
+    caption = "Source: primer.data::trains"
+  ) +
+  theme_minimal()
+```
+
+
+
+```{r}
+glimpse(trains)
+```
+
+Summary: Within the U.S., attitude towards immigration can vary widely due to various factors; one such factor is the exposure to people speaking other languages. Using data from Enos's experiment that measured the attitude of Boston-area Metra commuters who were and weren't exposed to Spanish-speaking confederates on the morning train, we aim to measure the average causal effect of Spanish exposure on immigration views.
