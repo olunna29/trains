@@ -10,6 +10,9 @@ execute:
 #| message: false
 library(tidyverse)
 library(primer.data)
+library(tidymodels)
+library(broom)
+library(gt)
 ```
 
 ```{r}
@@ -29,7 +32,26 @@ ggplot(trains, aes(x = treatment, y = att_end)) +
 
 
 ```{r}
-glimpse(trains)
+#| cache: true
+fit_att <- linear_reg(engine = "lm") |> 
+fit(att_end ~ treatment, data = trains)
 ```
 
-Summary: Within the U.S., attitude towards immigration can vary widely due to various factors; one such factor is the exposure to people speaking other languages. Using data from Enos's experiment that measured the attitude of Boston-area Metra commuters who were and weren't exposed to Spanish-speaking confederates on the morning train, we aim to measure the average causal effect of Spanish exposure on immigration views.
+```{r}
+tidy(fit_att, conf.int = TRUE) |>
+  select(term, estimate, conf.low, conf.high) |>
+  mutate(across(where(is.numeric), ~ signif(.x, 3))) |>
+  gt() |>
+  tab_header(
+    title = "Effect of Spanish-Speakers on Commuter Attitudes",
+    subtitle = "Source: trains dataset (primer.data)"
+  ) |>
+  cols_label(
+    term = "Term",
+    estimate = "Estimate",
+    conf.low = "Conf. Low",
+    conf.high = "Conf. High"
+  )
+```
+
+Summary: Within the U.S., attitude towards immigration can vary widely due to various factors; one such factor is the exposure to people speaking other languages. Using data from Enos's experiment that measured the attitude of Boston-area Metra commuters who were and weren't exposed to Spanish-speaking confederates on the morning train, we aim to measure the average causal effect of Spanish exposure on immigration views. Our model may have some limitations due to the lack of representativeness of the data; not only were the commuters volunteers, but they also only came from a small subsect of the Boston population. We model immigration views as a linear function of exposure to Spanish speakers.
